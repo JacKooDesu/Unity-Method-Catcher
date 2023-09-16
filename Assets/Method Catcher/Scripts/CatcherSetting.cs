@@ -22,6 +22,13 @@ namespace MethodCatcher
         public string TargetMethod;
         public string GetKey() => $"{TargetAssembly}.{TargetType}.{TargetMethod}";
         static Harmony _harmony { get; } = new("method.catcher.harmony");
+        public CatcherSetting(
+            string assembly, string type, string method)
+        {
+            TargetAssembly = assembly;
+            TargetType = type;
+            TargetMethod = method;
+        }
 
         public static bool GetEventHandler(CatcherSetting setting, out UnityEvent handler)
         {

@@ -27,6 +27,10 @@ namespace MethodCatcher
             string[] types;
             string[] methods;
 
+            int oldSelectedAssembly = -1;
+            int oldSelectedType = -1;
+            int oldSelectedMethod = -1;
+
             public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
                 height;
 
@@ -61,17 +65,37 @@ namespace MethodCatcher
                             goto EndBlock;
                         }
 
+                        int originIndex;
+                        originIndex = assemblies.ToList().IndexOf(serializedAssembly.stringValue);
+                        if (oldSelectedAssembly != serializedSelectedAssembly.intValue &&
+                            oldSelectedAssembly is -1)
+                            serializedSelectedAssembly.intValue = originIndex;
+
                         serializedAssembly.stringValue = assemblies[serializedSelectedAssembly.intValue];
                         if (_FlattenDict.TryGetValue(assemblies[serializedSelectedAssembly.intValue], out var tDict))
                         {
                             types = tDict.Keys.ToArray();
+                            originIndex = types.ToList().IndexOf(serializedType.stringValue);
+                            if (oldSelectedType != serializedSelectedType.intValue &&
+                                oldSelectedType is -1)
+                                serializedSelectedType.intValue = originIndex;
+
                             serializedType.stringValue = types[serializedSelectedType.intValue];
                             if (tDict.TryGetValue(types[serializedSelectedType.intValue], out var mArr))
                             {
                                 methods = mArr;
+                                originIndex = methods.ToList().IndexOf(serializedMethod.stringValue);
+                                if (oldSelectedMethod != serializedSelectedMethod.intValue &&
+                                    oldSelectedMethod is -1)
+                                    serializedSelectedMethod.intValue = originIndex;
+
                                 serializedMethod.stringValue = methods[serializedSelectedMethod.intValue];
                             }
                         }
+
+                        oldSelectedAssembly = serializedSelectedAssembly.intValue;
+                        oldSelectedType = serializedSelectedType.intValue;
+                        oldSelectedMethod = serializedSelectedMethod.intValue;
 
                         // var assemblyRect = CalRect(serializedAssembly, ref height, ref position);
                         // var typeRect = CalRect(serializedType, ref height, ref position);
