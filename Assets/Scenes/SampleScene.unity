@@ -380,7 +380,7 @@ MonoBehaviour:
     TargetMethod: Hello
     selectedAssembly: 0
     selectedType: 1
-    selectedMethod: 0
+    selectedMethod: 1
   _onInvoke:
     m_PersistentCalls:
       m_Calls:

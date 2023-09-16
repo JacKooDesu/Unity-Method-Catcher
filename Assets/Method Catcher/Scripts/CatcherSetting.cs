@@ -55,7 +55,7 @@ namespace MethodCatcher
             var postfix = AccessTools.Method(
                     typeof(CatcherSetting),
                     nameof(Invoke));
-            Debug.Log(postfix);
+
             _harmony.Patch(
                 original,
                 postfix: new(postfix));
@@ -80,8 +80,6 @@ namespace MethodCatcher
         {
             _assemblies = AppDomain.CurrentDomain.GetAssemblies()
                     .ToDictionary(x => x.GetName().Name);
-
-            Debug.Log(_assemblies.Count);
         }
     }
 }

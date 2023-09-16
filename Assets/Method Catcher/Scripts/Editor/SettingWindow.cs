@@ -8,6 +8,7 @@ namespace MethodCatcher
     {
         Vector2 _scrollPos;
         string _filter = "";
+        bool _showSelectedOnly = false;
 
         [MenuItem("Method Catcher/Setting")]
         static void ShowWindow()
@@ -47,14 +48,22 @@ namespace MethodCatcher
 
         void DrawAssemblis()
         {
-            var keys = CatcherSetting.READ_ASSEMBLY.Keys.ToList();
+            var keys = _showSelectedOnly ?
+                CatcherSetting.READ_ASSEMBLY.Where(x => x.Value).Select(x => x.Key).ToList() :
+                CatcherSetting.READ_ASSEMBLY.Keys.ToList();
+
             _filter = GUILayout.TextField(_filter);
             if (!string.IsNullOrWhiteSpace(_filter))
                 keys.RemoveAll(a => !a.GetName().Name.Contains(_filter));
 
-            if (GUILayout.Button("", GUILayout.Width(20f)))
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("", GUILayout.Width(15), GUILayout.Height(15)))
                 foreach (var a in keys)
                     CatcherSetting.READ_ASSEMBLY[a] = !CatcherSetting.READ_ASSEMBLY[a];
+
+            _showSelectedOnly = EditorGUILayout.ToggleLeft("Show Selected Only", _showSelectedOnly, EditorStyles.miniButtonRight);
+
+            GUILayout.EndHorizontal();
 
             _scrollPos = GUILayout.BeginScrollView(_scrollPos);
             foreach (var a in keys)
