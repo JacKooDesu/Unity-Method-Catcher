@@ -1,0 +1,20 @@
+{
+    "name": "MethodCatcher",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "MonoMod.Core.dll",
+        "0Harmony.dll",
+        "MonoMod.Utils.dll",
+        "MonoMod.ILHelpers.dll",
+        "MonoMod.Iced.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

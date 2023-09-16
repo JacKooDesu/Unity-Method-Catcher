@@ -1,0 +1,13 @@
+{
+  "name": "com.jackoo.colorize",
+  "version": "1.0.0",
+  "displayName": "Method Catcher",
+  "description": "Catch method call, and convert it to callback!",
+  "unity": "2021.3",
+  "author": {
+    "name": "jackoo"
+  },
+  "dependencies": {
+    "com.unity.nuget.mono-cecil": "1.10.1"
+  }
+}
