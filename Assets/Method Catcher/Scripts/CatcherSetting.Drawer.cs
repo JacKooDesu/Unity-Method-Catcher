@@ -27,9 +27,9 @@ namespace MethodCatcher
             string[] types;
             string[] methods;
 
-            int oldSelectedAssembly = -1;
-            int oldSelectedType = -1;
-            int oldSelectedMethod = -1;
+            int oldSelectedAssembly = int.MinValue;
+            int oldSelectedType = int.MinValue;
+            int oldSelectedMethod = int.MinValue;
 
             public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
                 height;
@@ -67,27 +67,24 @@ namespace MethodCatcher
 
                         int originIndex;
                         originIndex = assemblies.ToList().IndexOf(serializedAssembly.stringValue);
-                        if (oldSelectedAssembly != serializedSelectedAssembly.intValue &&
-                            oldSelectedAssembly is -1)
-                            serializedSelectedAssembly.intValue = originIndex;
+                        if (oldSelectedAssembly != originIndex)
+                            serializedSelectedAssembly.intValue = originIndex is -1 ? 0 : originIndex;
 
                         serializedAssembly.stringValue = assemblies[serializedSelectedAssembly.intValue];
                         if (_FlattenDict.TryGetValue(assemblies[serializedSelectedAssembly.intValue], out var tDict))
                         {
                             types = tDict.Keys.ToArray();
                             originIndex = types.ToList().IndexOf(serializedType.stringValue);
-                            if (oldSelectedType != serializedSelectedType.intValue &&
-                                oldSelectedType is -1)
-                                serializedSelectedType.intValue = originIndex;
+                            if (oldSelectedType != originIndex)
+                                serializedSelectedType.intValue = originIndex is -1 ? 0 : originIndex;
 
                             serializedType.stringValue = types[serializedSelectedType.intValue];
                             if (tDict.TryGetValue(types[serializedSelectedType.intValue], out var mArr))
                             {
                                 methods = mArr;
                                 originIndex = methods.ToList().IndexOf(serializedMethod.stringValue);
-                                if (oldSelectedMethod != serializedSelectedMethod.intValue &&
-                                    oldSelectedMethod is -1)
-                                    serializedSelectedMethod.intValue = originIndex;
+                                if (oldSelectedMethod != originIndex)
+                                    serializedSelectedMethod.intValue = originIndex is -1 ? 0 : originIndex;
 
                                 serializedMethod.stringValue = methods[serializedSelectedMethod.intValue];
                             }
