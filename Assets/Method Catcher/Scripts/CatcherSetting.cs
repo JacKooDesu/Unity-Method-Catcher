@@ -21,7 +21,6 @@ namespace MethodCatcher
         public string TargetType;
         public string TargetMethod;
         public string GetKey() => $"{TargetAssembly}.{TargetType}.{TargetMethod}";
-        static Harmony _harmony { get; } = new("method.catcher.harmony");
         public CatcherSetting(
             string assembly, string type, string method)
         {
@@ -30,50 +29,20 @@ namespace MethodCatcher
             TargetMethod = method;
         }
 
-        public static bool GetEventHandler(CatcherSetting setting, out UnityEvent handler)
+        public bool GetEventHandler(out UnityEvent<object> handler)
         {
-            var key = setting.GetKey();
-            if (!EventHandleDict.TryGetValue(key, out var result))
-            {
-                if ((result = Patch(setting)) is not null)
-                    EventHandleDict.TryAdd(key, result);
-            }
+            handler = null;
+            if (!_assemblies.TryGetValue(TargetAssembly, out var assembly))
+                return false;
 
-            return (handler = result) is not null;
-        }
-
-        static UnityEvent Patch(CatcherSetting setting)
-        {
-            UnityEvent handler = null;
-            if (!_assemblies.TryGetValue(setting.TargetAssembly, out var assembly))
-                return handler;
-
-            handler = new();
             var original = AccessTools.Method(
-                    assembly.GetType(setting.TargetType),
-                    setting.TargetMethod);
-            var postfix = AccessTools.Method(
-                    typeof(CatcherSetting),
-                    nameof(Invoke));
+                    assembly.GetType(TargetType),
+                    TargetMethod);
 
-            _harmony.Patch(
-                original,
-                postfix: new(postfix));
-
-            return handler;
+            handler = Patcher.Patch(GetKey(), original);
+            return handler is not null;
         }
 
-        // static void Invoke(ref object __instance, MethodInfo __originalMethod)
-        static void Invoke(ref object __instance, MethodInfo __originalMethod)
-        {
-            var type = __instance.GetType();
-            var key = $"{type.Assembly.GetName().Name}.{type.FullName}.{__originalMethod.Name}";
-
-            if (EventHandleDict.TryGetValue(key, out var result))
-                result.Invoke();
-        }
-
-        static Dictionary<string, UnityEvent> EventHandleDict { get; } = new();
         static Dictionary<string, Assembly> _assemblies;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         public static void LoadAssembly()

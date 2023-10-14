@@ -6,17 +6,14 @@ namespace MethodCatcher
 {
     public class MethodCatcherComponent : MonoBehaviour
     {
-        [SerializeField] public List<CatcherSetting> _settings;
+        [SerializeField] public CatcherSetting _setting;
         [SerializeField] UnityEvent _onInvoke = new();
-        public UnityEvent OnInvoke => _onInvoke;
+        public UnityEvent<object> OriginHandler { get; private set; }
 
         void Awake()
         {
-            _settings.ForEach(s =>
-            {
-                if (CatcherSetting.GetEventHandler(s, out var handler))
-                    handler.AddListener(_onInvoke.Invoke);
-            });
+            if (_setting.GetEventHandler(out var handler))
+                (OriginHandler = handler).AddListener(_ => _onInvoke.Invoke());
         }
 
 #if UNITY_EDITOR

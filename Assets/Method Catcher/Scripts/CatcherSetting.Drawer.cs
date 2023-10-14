@@ -122,7 +122,7 @@ namespace MethodCatcher
             }
 
             Rect CalRect(SerializedProperty sp, ref float height, ref Rect position) =>
-                CalRect(EditorGUI.GetPropertyHeight(sp), ref height, ref position);
+                CalRect(EditorGUI.GetPropertyHeight(sp, true), ref height, ref position);
             Rect CalRect(float h, ref float height, ref Rect position)
             {
                 var rect = new Rect(

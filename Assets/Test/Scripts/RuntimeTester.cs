@@ -6,19 +6,22 @@ namespace Test
 {
     public class RuntimeTester : MonoBehaviour
     {
-        void Hello2()
-        {
-            Debug.Log("Hello called!");
-        }
         [ContextMenu("Hello")]
         void Hello()
         {
             Debug.Log("Hello called!");
         }
 
-        public void InhjectCallback()
+        public void InjectCallback()
         {
             Debug.Log("Inject!!");
+        }
+
+        [ContextMenu("Hello 2")]
+        public string Hello2()
+        {
+            Debug.Log("Hello2 called!");
+            return Time.deltaTime.ToString();
         }
 
         public T HelloGeneric<T>(T t)

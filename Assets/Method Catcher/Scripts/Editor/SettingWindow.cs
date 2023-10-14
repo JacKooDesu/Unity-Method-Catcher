@@ -1,8 +1,10 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using System.Reflection;
 
-namespace MethodCatcher
+namespace MethodCatcher.Editor
 {
     public class SettingWindow : EditorWindow
     {
@@ -75,3 +77,5 @@ namespace MethodCatcher
         }
     }
 }
+
+#endif
