@@ -66,10 +66,14 @@ namespace MethodCatcher
 
         static void InvokeAsync(ref object __instance, MethodInfo __originalMethod, ref object __result)
         {
+            const string M_AWAITER_GETTER = nameof(UniTask.GetAwaiter);
+            const string M_RESULT_GETTER = nameof(UniTask.Awaiter.GetResult);
+            const string M_ON_COMPLETED = nameof(UniTask.Awaiter.OnCompleted);
+
             var type = __instance.GetType();
             var key = $"{type.Assembly.GetName().Name}.{type.FullName}.{__originalMethod.Name}";
             var awaiter = __result.GetType().GetMethod(
-                "GetAwaiter",
+                M_AWAITER_GETTER,
                 BindingFlags.Public | BindingFlags.Instance)
                 .Invoke(__result, Array.Empty<object>());
 
@@ -77,10 +81,10 @@ namespace MethodCatcher
             {
                 var aType = awaiter.GetType();
                 Action action = () => result.Invoke(
-                    aType.GetMethod("GetResult", (BindingFlags)int.MaxValue)
+                    aType.GetMethod(M_RESULT_GETTER, (BindingFlags)int.MaxValue)
                         .Invoke(awaiter, Array.Empty<object>()));
 
-                var m = aType.GetMethod("OnCompleted", (BindingFlags)int.MaxValue);
+                var m = aType.GetMethod(M_ON_COMPLETED, (BindingFlags)int.MaxValue);
                 m.Invoke(awaiter, new object[] { action });
             }
         }
