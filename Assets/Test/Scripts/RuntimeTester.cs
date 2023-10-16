@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace Test
 {
@@ -21,6 +23,24 @@ namespace Test
         public string Hello2()
         {
             Debug.Log("Hello2 called!");
+            return Time.deltaTime.ToString();
+        }
+
+        [ContextMenu("Hello 3")]
+        public async UniTask<string> Hello3()
+        {
+            Debug.Log("Hello3 waiting...");
+            await UniTask.Delay(1000);
+            Debug.Log("Hello3 called!");
+            return Time.deltaTime.ToString();
+        }
+
+        [ContextMenu("Hello 4")]
+        public async Task<string> Hello4()
+        {
+            Debug.Log("Hello4 waiting...");
+            await UniTask.Delay(1000);
+            Debug.Log("Hello4 called!");
             return Time.deltaTime.ToString();
         }
 

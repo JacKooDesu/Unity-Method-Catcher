@@ -21,6 +21,9 @@ namespace Test
         {
             width = Screen.width;
             height = Screen.height;
+
+            Bind("Test", "Test.RuntimeTester", "Hello3");
+            Bind("Test", "Test.RuntimeTester", "Hello4");
         }
         void OnGUI()
         {
@@ -29,18 +32,7 @@ namespace Test
             _type = GUILayout.TextArea(_type);
             _method = GUILayout.TextArea(_method);
             if (GUILayout.Button("Bind!"))
-            {
-                CatcherSetting setting = new(_assembly, _type, _method);
-                if (setting.GetEventHandler(out var handler))
-                {
-                    var current = bindedCount;
-                    UnityAction<object> action = _ => Debug.Log($"Binded `{current}`, result: {_}");
-                    _binded.Add(setting, action);
-                    handler.AddListener(action);
-
-                    bindedCount++;
-                }
-            }
+                Bind(_assembly, _type, _method);
 
             foreach (var (setting, action) in _binded)
             {
@@ -56,6 +48,20 @@ namespace Test
 
             while (_pendingRemove.TryDequeue(out var setting))
                 _binded.Remove(setting);
+        }
+
+        void Bind(string _assembly, string _type, string _method)
+        {
+            CatcherSetting setting = new(_assembly, _type, _method);
+            if (setting.GetEventHandler(out var handler))
+            {
+                var current = bindedCount;
+                UnityAction<object> action = _ => Debug.Log($"Binded `{current}`, RT: {_.GetType()}, result: {_}");
+                _binded.Add(setting, action);
+                handler.AddListener(action);
+
+                bindedCount++;
+            }
         }
 
         void RuntimeInject(string assembly, string type, string method)

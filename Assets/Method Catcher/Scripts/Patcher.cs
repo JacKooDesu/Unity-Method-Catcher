@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using Cysharp.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Events;
@@ -20,10 +22,15 @@ namespace MethodCatcher
 
             handler = new();
             var original = method;
+            var invoker = nameof(Invoke);
+            if (original.ReturnType == typeof(void))
+                invoker = nameof(InvokeVoid);
+            else if (IsAsync(original))
+                invoker = nameof(InvokeAsync);
+
             var postfix = AccessTools.Method(
                     typeof(Patcher),
-                    original.ReturnType == typeof(void) ?
-                        nameof(InvokeVoid) : nameof(Invoke));
+                    invoker);
 
             _harmony.Patch(
                 original,
@@ -31,6 +38,12 @@ namespace MethodCatcher
             EventHandleDict.TryAdd(key, handler);
 
             return handler;
+        }
+
+        static bool IsAsync(MethodInfo info)
+        {
+            var a = typeof(AsyncStateMachineAttribute);
+            return (info.GetCustomAttribute(a) as AsyncStateMachineAttribute) is not null;
         }
 
         static void InvokeVoid(ref object __instance, MethodInfo __originalMethod)
@@ -49,6 +62,27 @@ namespace MethodCatcher
 
             if (EventHandleDict.TryGetValue(key, out var result))
                 result.Invoke(__result);
+        }
+
+        static void InvokeAsync(ref object __instance, MethodInfo __originalMethod, ref object __result)
+        {
+            var type = __instance.GetType();
+            var key = $"{type.Assembly.GetName().Name}.{type.FullName}.{__originalMethod.Name}";
+            var awaiter = __result.GetType().GetMethod(
+                "GetAwaiter",
+                BindingFlags.Public | BindingFlags.Instance)
+                .Invoke(__result, Array.Empty<object>());
+
+            if (EventHandleDict.TryGetValue(key, out var result))
+            {
+                var aType = awaiter.GetType();
+                Action action = () => result.Invoke(
+                    aType.GetMethod("GetResult", (BindingFlags)int.MaxValue)
+                        .Invoke(awaiter, Array.Empty<object>()));
+
+                var m = aType.GetMethod("OnCompleted", (BindingFlags)int.MaxValue);
+                m.Invoke(awaiter, new object[] { action });
+            }
         }
 
         static Dictionary<string, UnityEvent<object>> EventHandleDict { get; } = new();
