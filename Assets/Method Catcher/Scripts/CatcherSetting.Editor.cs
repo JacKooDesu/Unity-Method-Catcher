@@ -44,6 +44,7 @@ namespace MethodCatcher
 
         internal static void BatchAssemblies()
         {
+            _FlattenDict.Clear();
             Debug.LogWarning("[Condition Checker] Batching Assembly!");
 
             var assems = READ_ASSEMBLY
@@ -59,9 +60,13 @@ namespace MethodCatcher
 
             foreach (var a in enumerable)
             {
+                if (a.types.Count() is 0)
+                    continue;
                 Dictionary<string, string[]> typeMethodsDict = new();
                 foreach (var t in a.types)
                 {
+                    if (t.methods.Length is 0)
+                        continue;
                     typeMethodsDict.TryAdd(
                         t.name,
                         t.methods.Select(x => x.Name).ToArray());

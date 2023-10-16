@@ -44,6 +44,16 @@ namespace Test
             return Time.deltaTime.ToString();
         }
 
+        [ContextMenu("Hello 5")]
+        public async void Hello5Invoker() => await Hello5("String");
+        public async UniTask<string> Hello5(string str)
+        {
+            Debug.Log("Hello5 waiting...");
+            await UniTask.Delay(1000);
+            Debug.Log("Hello5 called!");
+            return str;
+        }
+
         public T HelloGeneric<T>(T t)
         {
             Debug.Log(t);

@@ -24,6 +24,7 @@ namespace Test
 
             Bind("Test", "Test.RuntimeTester", "Hello3");
             Bind("Test", "Test.RuntimeTester", "Hello4");
+            Bind("Test", "Test.RuntimeTester", "Hello5");
         }
         void OnGUI()
         {

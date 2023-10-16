@@ -46,7 +46,7 @@ namespace MethodCatcher
             return (info.GetCustomAttribute(a) as AsyncStateMachineAttribute) is not null;
         }
 
-        static void InvokeVoid(ref object __instance, MethodInfo __originalMethod)
+        static void InvokeVoid(ref object __instance, MethodInfo __originalMethod, object[] __args)
         {
             var type = __instance.GetType();
             var key = $"{type.Assembly.GetName().Name}.{type.FullName}.{__originalMethod.Name}";
@@ -55,7 +55,7 @@ namespace MethodCatcher
                 result.Invoke(null);
         }
 
-        static void Invoke(ref object __instance, MethodInfo __originalMethod, ref object __result)
+        static void Invoke(ref object __instance, MethodInfo __originalMethod, object[] __args, ref object __result)
         {
             var type = __instance.GetType();
             var key = $"{type.Assembly.GetName().Name}.{type.FullName}.{__originalMethod.Name}";
@@ -64,7 +64,7 @@ namespace MethodCatcher
                 result.Invoke(__result);
         }
 
-        static void InvokeAsync(ref object __instance, MethodInfo __originalMethod, ref object __result)
+        static void InvokeAsync(ref object __instance, MethodInfo __originalMethod, object[] __args, ref object __result)
         {
             const string M_AWAITER_GETTER = nameof(UniTask.GetAwaiter);
             const string M_RESULT_GETTER = nameof(UniTask.Awaiter.GetResult);
